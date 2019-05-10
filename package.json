@@ -1,6 +1,6 @@
 {
   "name": "test-gas",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "cli tool to compare gas cost of deploying/executing multiple contracts",
   "bin": "index.js",
   "directories": {
@@ -19,11 +19,8 @@
     "argparse": "^1.0.10",
     "ascii-table": "0.0.9",
     "chai": "^4.2.0",
-    "cli-table": "^0.3.1",
     "fs-plus": "^3.1.1",
-    "mkdirp": "^0.5.1",
     "mocha": "^6.1.2",
-    "rimraf": "^2.6.3",
     "truffle": "^5.0.12"
   }
 }

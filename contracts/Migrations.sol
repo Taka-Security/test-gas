@@ -4,12 +4,12 @@ contract Migrations {
   address public owner;
   uint public last_completed_migration;
 
-  constructor() public {
-    owner = msg.sender;
-  }
-
   modifier restricted() {
     if (msg.sender == owner) _;
+  }
+
+  constructor() public {
+    owner = msg.sender;
   }
 
   function setCompleted(uint completed) public restricted {
