@@ -34,7 +34,7 @@ Optional arguments:
 1. create two contracts:
 
   - `Test_increment_single.sol`
-    ```
+    ```Solidity
     pragma solidity ^0.5.8;
 
     contract Test_increment_single {
@@ -45,7 +45,7 @@ Optional arguments:
     } 
     ```
   - `Test_increment_double.sol`
-    ```
+    ```Solidity
     pragma solidity ^0.5.8;
 
     contract Test_increment_double {
