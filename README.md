@@ -2,9 +2,23 @@
 [![Version](https://img.shields.io/npm/v/test-gas.svg?style=flat-square&label=version)](https://www.npmjs.com/package/test-gas)
 ![Download](https://img.shields.io/npm/dt/test-gas.svg)
 
-## test-gas
+# test-gas
 
 Comparing gas cost of executing the same function in different solidity contracts.
+
+## Install 
+
+```
+npm i -g test-gas
+```
+
+or execute without install:
+
+```
+npx test-gas
+```
+
+## Usage 
 
 ```
 usage: index.js [-h] [-v] --contracts <path> [<path> ...] --solc <version>
@@ -33,7 +47,7 @@ Optional arguments:
   --node-websockets     use websockets of ethereum node                     
 ```
 
-### Example
+#### Example
 
 1. create two contracts:
 
