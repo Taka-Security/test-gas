@@ -4,9 +4,11 @@ const path = require('path');
 const fs = require('fs-plus');
 const exec = require('util').promisify(require('child_process').exec);
 
+const chalk = require('chalk');
+const { table } = require('table');
 const { ArgumentParser } = require('argparse');
 
-function gatherCliArgs() {
+function gather_cli_args() {
   const argParser = new ArgumentParser({
     version: '0.0.1',
     addHelp: true,
@@ -37,7 +39,6 @@ function gatherCliArgs() {
   argParser.addArgument(
     [ '--function' ],
     {
-      required: true,
       metavar: '<function()>',
       help: 'function to call, e.g. \'testFn(2)\'',
       dest: 'fn_call',
@@ -145,6 +146,11 @@ function setup_testrun_dirs(inputFilePaths) {
       fs.readFileSync(testfilePath, 'utf8'),
     );
   }); 
+  
+  fs.writeFileSync(
+    path.join(TESTRUN_CONTRACT_DIR, 'config.json'),
+    JSON.stringify({ contracts: inputFilePaths }, null, 2),
+  );
 }
 
 function cleanup_testrun_dirs() {
@@ -170,8 +176,37 @@ function setup_solc(solc_version, optimizer_runs, evm_version, node_host, node_p
   );
 }
 
+const add_colors = number_arr => {
+  const lowest = Math.min(...number_arr);
+  const highest = Math.max(...number_arr);
+  return number_arr.map(n => {
+    if (n === lowest) {
+        return chalk.green(n);
+    }
+    else {
+      return `${n}  ${chalk.red('+' + (n - lowest))}`;
+    }
+  });
+}
+// const table = new AsciiTable();
+const parse_data = (fn_call, data) => {
+  const ret = [
+    ['', ...data.contractNames],
+    ['contract size', ...add_colors(data.contractNames.map(contractName => data.codesize[contractName]))],
+    ['deployment gas cost', ...add_colors(data.contractNames.map(contractName => data.deploymentGas[contractName]))],
+  ];
+  if (fn_call) ret.push(
+    ['function call gas cost', ...add_colors(data.contractNames.map(contractName => data.usageGas[contractName]))]
+  );
+  return ret;
+};
+
+const print_data = (fn_call, data) => (
+  console.log(table(parse_data(fn_call, data)))
+);
+
 async function main() {
-  const cliArgs = gatherCliArgs();
+  const cliArgs = gather_cli_args();
   
   // absolute paths make our life easier
   const inputFilePaths = cliArgs.solidity_file_paths.map(p => path.join(process.cwd(), p));
@@ -182,18 +217,24 @@ async function main() {
   const outputSuccessFilePath = path.join(TESTRUN_OUTPUT_DIR, 'test_output.txt');
   const outputTruffleTestPath = path.join(TESTRUN_OUTPUT_DIR, 'truffle_output.txt');
 
-  console.log(`executing ${cliArgs.fn_call} in ${inputFilePaths.length} solidity test files`);
+  if (cliArgs.fn_call) {
+    console.log(`executing ${cliArgs.fn_call} in ${inputFilePaths.length} solidity test files`);
+  }
 
   try {
-    await exec(`FN_CALL='${cliArgs.fn_call}' SOLC_VERSION=${cliArgs.solc_version} TEST_FILE_PATHS=${inputFilePaths} OUTPUT_FILE_PATH=${outputSuccessFilePath} ${path.join(__dirname, 'node_modules', '.bin', 'truffle test 1>' + outputTruffleTestPath)}`, { cwd: __dirname });
+    if (cliArgs.fn_call) {
+      await exec(`FN_CALL='${cliArgs.fn_call }' SOLC_VERSION=${cliArgs.solc_version} TEST_FILE_PATHS=${inputFilePaths} OUTPUT_FILE_PATH=${outputSuccessFilePath} ${path.join(__dirname, 'node_modules', '.bin', 'truffle test 1>' + outputTruffleTestPath)}`, { cwd: __dirname });
+    } else {
+      await exec(`SOLC_VERSION=${cliArgs.solc_version} TEST_FILE_PATHS=${inputFilePaths} OUTPUT_FILE_PATH=${outputSuccessFilePath} ${path.join(__dirname, 'node_modules', '.bin', 'truffle test 1>' + outputTruffleTestPath)}`, { cwd: __dirname });
+    }
   } catch (err) {
     if (/Command failed:/.test(err)) {
       console.log('==== TRUFFLE ERROR ====', err);
       fs.existsSync(outputTruffleTestPath) && console.log(fs.readFileSync(outputTruffleTestPath, 'utf8'));
-      // cleanup_testrun_dirs();
+      cleanup_testrun_dirs();
       process.exit(0);
     } 
-    // cleanup_testrun_dirs();
+    cleanup_testrun_dirs();
     throw err;
   }
   
@@ -209,7 +250,8 @@ async function main() {
   console.log(`solc: ${cliArgs.solc_version} | evm: ${cliArgs.evm_version} | optimizer runs: ${cliArgs.optimizer_runs}`);
   
   // print table with all results
-  console.log(fs.readFileSync(outputSuccessFilePath, 'utf8'));
+  const output_data = JSON.parse(fs.readFileSync(outputSuccessFilePath, 'utf8'));
+  print_data(cliArgs.fn_call, output_data);
   
   cleanup_testrun_dirs();
 };
