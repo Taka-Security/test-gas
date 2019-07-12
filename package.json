@@ -1,6 +1,6 @@
 {
   "name": "test-gas",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "cli tool to compare gas cost of deploying contracts and executing functions",
   "bin": "cli.js",
   "directories": {
