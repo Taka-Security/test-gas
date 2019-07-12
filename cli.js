@@ -51,7 +51,7 @@ const TRUFFLE_CONFIG_PATH = path.join(__dirname, 'truffle-config.js');
  */
 function gather_cli_args() {
   const argParser = new ArgumentParser({
-    version: '0.0.1',
+    version: require('./package.json').version,
     addHelp: false,
     description: 'Compare gas cost of executing multiple functions',
   });
