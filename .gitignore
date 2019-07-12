@@ -6,3 +6,4 @@ contracts/testrun
 
 .ignore
 
+truffle-config.js
