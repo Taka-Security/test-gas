@@ -505,7 +505,7 @@ try {
     }
     
     // convert to absolute paths
-    const input_file_paths = cli_args.solidity_file_paths.map(p => path.join(process.cwd(), p));
+    const input_file_paths = cli_args.solidity_file_paths.map(p => path.isAbsolute(p) ? p : path.join(process.cwd(), p));
     
     // create truffle-config.js file
     const truffle_config = setup_truffle_config(cli_args.solc_version, cli_args.optimizer_runs, cli_args.evm_version, cli_args.node_host, cli_args.node_port, cli_args.node_id, cli_args.node_websockets, cli_args.node_gas_limit);
