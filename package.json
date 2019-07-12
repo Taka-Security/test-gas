@@ -1,8 +1,8 @@
 {
   "name": "test-gas",
   "version": "0.0.4",
-  "description": "cli tool to compare gas cost of deploying/executing multiple contracts",
-  "bin": "index.js",
+  "description": "cli tool to compare gas cost of deploying contracts and executing functions",
+  "bin": "cli.js",
   "directories": {
     "test": "test"
   },
@@ -11,16 +11,19 @@
     "security",
     "gas",
     "solc",
-    "truffle"
+    "truffle",
+    "test",
+    "comparison",
+    "disassembly",
+    "evm"
   ],
   "author": "Alexander Remie",
   "license": "MIT",
   "dependencies": {
     "argparse": "^1.0.10",
-    "chai": "^4.2.0",
     "chalk": "^2.4.2",
+    "evm": "^0.2.0",
     "fs-plus": "^3.1.1",
-    "mocha": "^6.1.2",
     "table": "^5.4.0",
     "truffle": "^5.0.12"
   }

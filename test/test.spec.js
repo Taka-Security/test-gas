@@ -4,51 +4,52 @@ const fs = require('fs');
 const TESTRUN_CONTRACT_DIR = path.join(__dirname, '..', 'contracts', 'testrun');
 
 contract('Testing', () => {
-  let comparison;
-  let contractNames = [];
-  let fnName;
-  let fnArgs = [];
+  let json_results = { 
+    contract_names: [],
+    bytecode: {},
+    codesize: {},
+    deploymentGas: {},
+    usageGas: {},
+  };
+  let contract_names = [];
+  let fn_name;
+  let fn_args = [];
+  let test_config;
   
   before(() => {    
-    const testConfig = require(path.join(TESTRUN_CONTRACT_DIR, 'config.json'));
-    const testfilePaths = fs.readdirSync(TESTRUN_CONTRACT_DIR); 
+    // this file has been created in the main test-gas process and contains all necessary data to execute the tests
+    test_config = require(path.join(TESTRUN_CONTRACT_DIR, 'config.json'));
     
-    testConfig.contracts.forEach((testfilePath) => {
-      const contractName = path.basename(testfilePath, '.sol');
-      contractNames.push(contractName);
-    });      
+    contract_names = test_config.contract_names.map(testfilePath => path.basename(testfilePath, '.sol'));
     
-    comparison = {
-      contractNames: [],
-      codesize: {},
-      deploymentGas: {},
-      usageGas: {},
-    };
-    
-    if (!!process.env.FN_CALL) {
-      fnName = process.env.FN_CALL.split('(')[0];
-      fnArgs.push(...process.env.FN_CALL.replace(new RegExp(`${fnName}\\(`), '').trim().slice(0, -1).split(',').filter(x => !!x));
+    if (test_config.fn_call) {
+      fn_name = test_config.fn_call.split('(')[0];
+      fn_args.push(...test_config.fn_call.replace(new RegExp(`${fn_name}\\(`), '').trim().slice(0, -1).split(',').filter(x => !!x));
     }
   });
   
   after(() => {    
-    fs.writeFileSync(process.env.OUTPUT_FILE_PATH, JSON.stringify(comparison, null, 2));
+    // write json result data to the the success file
+    // the success file is at a static location and acts as the gate between 
+    // this truffle test execution and the main test-gas cli process
+    fs.writeFileSync(test_config.output_file_path, JSON.stringify(json_results, null, 2));
   });
   
-  it('Test', async () => {
-    for (let i = 0; i < contractNames.length; i += 1) {
-      const contractName = contractNames[i];
-      const contractArtifact = artifacts.require(path.join(TESTRUN_CONTRACT_DIR, contractName));
-      const contractInstance = await contractArtifact.new();
-      const contractCode = await web3.eth.getCode(contractInstance.address);
-      comparison.contractNames.push(contractName);
-      comparison.codesize[contractName] = (contractCode.length - 2) / 2;
-      comparison.deploymentGas[contractName] = (await web3.eth.getTransactionReceipt(contractInstance.transactionHash)).gasUsed;
+  it('Tests', async () => {
+    for (let i = 0; i < contract_names.length; i += 1) {
+      const contract_name = contract_names[i];
+      const contract_artifact = artifacts.require(path.join(TESTRUN_CONTRACT_DIR, contract_name));
+      const contract_instance = await contract_artifact.new();
+      const contract_code = await web3.eth.getCode(contract_instance.address);
+      
+      json_results.contract_names.push(contract_name);
+      json_results.bytecode[contract_name] = contract_code;
+      json_results.codesize[contract_name] = (contract_code.length - 2) / 2;
+      json_results.deploymentGas[contract_name] = (await web3.eth.getTransactionReceipt(contract_instance.transactionHash)).gasUsed;
     
-      if (!!process.env.FN_CALL) {
-        console.log('innnn');
-        const testTx = await contractInstance[fnName](...fnArgs);
-        comparison.usageGas[contractName] = testTx.receipt.gasUsed;
+      if (test_config.fn_call) {
+        const testTx = await contract_instance[fn_name](...fn_args);
+        json_results.usageGas[contract_name] = testTx.receipt.gasUsed;
       }
     }
   });
