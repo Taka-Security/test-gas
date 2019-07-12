@@ -263,7 +263,7 @@ function setup_truffle_config(solc_version, optimizer_runs, evm_version, node_ho
       },
     },
   };
-  console.log(`truffle  # ${require('./package-lock.json').dependencies.truffle.version}`);
+  console.log(`truffle  # ${require('./node_modules/truffle/package.json').version}`);
   console.log(`compiler # solc: ${solc_version} | evm: ${evm_version} | optimizer runs: ${optimizer_runs}`);
   
   // possibly add a truffle network to the truffle-config.js file
