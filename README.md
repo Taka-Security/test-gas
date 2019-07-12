@@ -4,7 +4,7 @@
 
 # test-gas
 
-cli tool to compare gas cost of deploying contracts and executing functions
+cli tool to compare gas cost of deploying contracts and executing functionsg
 
 ## Depenencies
 
@@ -75,7 +75,7 @@ Sample commands:
 
   `test-gas --contracts example/*.sol --solc 0.5.9 --evm byzantium`
   
-  ![](./screenshots/screenshot_set_evm.png)`
+  ![](./screenshots/screenshot_set_evm.png)
 
 - besides deploying, also call a function to compare execution gas cost
 
