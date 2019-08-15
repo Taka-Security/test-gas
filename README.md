@@ -4,9 +4,9 @@
 
 # test-gas
 
-cli tool to compare gas cost of deploying contracts and executing functionsg
+cli tool to compare gas cost of deploying contracts and executing functions
 
-## Depenencies
+## Dependencies
 
 - [`argparse`](https://www.npmjs.com/package/argparse), to parse cli args.
 - [`chalk`](https://www.npmjs.com/package/chalk), to colorize table output.
@@ -14,7 +14,6 @@ cli tool to compare gas cost of deploying contracts and executing functionsg
 - [`table`](https://www.npmjs.com/package/table), to generate ascii table.
 - [`truffle`](https://www.npmjs.com/package/truffle), to deploy/test smart contracts.
 - [`evm`](https://www.npmjs.com/package/evm), to disassemble contract bytecode.
-
 
 ## Install 
 
@@ -35,14 +34,14 @@ Command:
   test-gas <required args> [optional args]
 
 Required arguments:
-  --contracts [<path> ...]    solidity test file glob path, e.g. ./contracts/*.sol
-  --solc <version>            solc version to use, e.g. 0.5.6
-
+  --contracts [<path> ...]    solidity contract path(s), supports glob, e.g. ./contracts/*.sol  
+  
 Optional arguments:
+  --solc <version>            solc version to use, default = 0.5.9
+  --evm <version>             evm version to use, default = petersburg
+  --optimizer <runs>          number of optimizer runs, default = 0
   --function <function()>     function to call, e.g. 'testFn(2)'
-  --evm <version>             evm version to use, e.g. petersburg
-  --optimizer <runs>          number of optimizer runs, e.g. 200
-  --store-opcodes <dir path>  directory to write contract opcodes to
+  --disassemble <dir path>    directory to write disassembly to
   --node-host <host>          host/ip address of ethereum node
   --node-port <port>          port of ethereum node
   --node-id <id>              network id of ethereum node
@@ -53,6 +52,13 @@ Other:
   -h, --help                  show this help message and exit.
   -v, --version               show program's version number and exit. 
 ```
+
+## Notes
+
+- Since this uses truffle v5 under the hood Vyper contracts are also supported.
+But unlike `solc` this does require `vyper` to already be installed locally.
+  
+  `test-gas --contracts Contract1.sol Contract2.vy --solc 0.5.9`
 
 ## Examples
 

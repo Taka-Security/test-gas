@@ -2,14 +2,14 @@ Command:
   test-gas <required args> [optional args]
 
 Required arguments:
-  --contracts [<path> ...]    solidity test file glob path, e.g. ./contracts/*.sol
-  --solc <version>            solc version to use, e.g. 0.5.6
-
+  --contracts [<path> ...]    solidity contract path(s), supports glob, e.g. ./contracts/*.sol
+  
 Optional arguments:
+  --solc <version>            solc version to use, default = 0.5.9
+  --evm <version>             evm version to use, default = petersburg
+  --optimizer <runs>          number of optimizer runs, default = 0
   --function <function()>     function to call, e.g. 'testFn(2)'
-  --evm <version>             evm version to use, e.g. petersburg
-  --optimizer <runs>          number of optimizer runs, e.g. 200
-  --store-opcodes <dir path>  directory to write contract opcodes to
+  --disassemble <dir path>    directory to write disassembly to
   --node-host <host>          host/ip address of ethereum node
   --node-port <port>          port of ethereum node
   --node-id <id>              network id of ethereum node

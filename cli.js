@@ -60,7 +60,6 @@ function gather_cli_args() {
     [ '--help', '-h' ],
     {
       action: 'storeTrue',
-      help: 'display help',
       dest: 'display_help',
     }
   );
@@ -70,7 +69,6 @@ function gather_cli_args() {
     {
       nargs: '+',  //wont work when passing as env var to truffle test
       metavar: '<path>',
-      help: 'solidity contract path(s), supports glob',
       dest: 'solidity_file_paths',
     }
   );
@@ -80,7 +78,6 @@ function gather_cli_args() {
     {
       metavar: '<version>',
       defaultValue: '0.5.9',
-      help: 'solc version to use, DEFAULT=0.5.6',
       dest: 'solc_version',
     }
   );
@@ -91,7 +88,6 @@ function gather_cli_args() {
       defaultValue: 'petersburg',
       metavar: '<version>',
       choices: VALID_EVM_VERSIONS,
-      help: 'evm version to use, DEFAULT=petersburg',
       dest: 'evm_version',
     }
   );
@@ -102,7 +98,6 @@ function gather_cli_args() {
       defaultValue: 0,
       metavar: '<runs>',
       type: 'int',
-      help: 'number of optimizer runs, DEFAULT=0',
       dest: 'optimizer_runs',
     }
   );
@@ -111,7 +106,6 @@ function gather_cli_args() {
     [ '--function' ],
     {
       metavar: '<function()>',
-      help: 'function to call, e.g. \'testFn(2)\'',
       dest: 'fn_call',
     }
   );
@@ -119,9 +113,7 @@ function gather_cli_args() {
   argParser.addArgument(
     [ '--disassemble' ],
     {
-      // defaultValue: '127.0.0.1',
       metavar: '<dir path>',
-      help: 'directory to write contract disassemblies to',
       dest: 'disassembly_path',
     }
   );
@@ -129,9 +121,7 @@ function gather_cli_args() {
   argParser.addArgument(
     [ '--node-host' ],
     {
-      // defaultValue: '127.0.0.1',
       metavar: '<host>',
-      help: 'host/ip address of ethereum node',
       dest: 'node_host',
     }
   );
@@ -139,10 +129,8 @@ function gather_cli_args() {
   argParser.addArgument(
     [ '--node-port' ],
     {
-      // defaultValue: 8545,
       metavar: '<port>',
       type: 'int',
-      help: 'port of ethereum node',
       dest: 'node_port',
     }
   );
@@ -150,9 +138,7 @@ function gather_cli_args() {
   argParser.addArgument(
     [ '--node-id' ],
     {
-      // defaultValue: '*',
       metavar: '<id>',
-      help: 'network id of ethereum node',
       dest: 'node_id',
     }
   );
@@ -161,7 +147,6 @@ function gather_cli_args() {
     [ '--node-gas' ],
     {
       metavar: '<gaslimit>',
-      help: 'ethereum network gas limit',
       dest: 'node_gas_limit',
       type: 'int',
     }
@@ -170,9 +155,7 @@ function gather_cli_args() {
   argParser.addArgument(
     [ '--node-websockets' ],
     {
-      // defaultValue: false,
       action: 'storeTrue',
-      help: 'use websockets of ethereum node',
       dest: 'node_websockets',
     }
   );
@@ -193,6 +176,7 @@ function gather_cli_args() {
  * removes folders that are used to store temporary results of each execution of this script
  */
 function cleanup_testrun_dirs() {
+  fs.removeSync(TRUFFLE_CONFIG_PATH);
   fs.removeSync(TESTRUN_CONTRACT_DIR);        // ./contracts/testrun/
   fs.removeSync(TESTRUN_OUTPUT_DIR);          // ./test/testrun/
   fs.removeSync(TESTRUN_CONTRACT_CONFIG_FILE) // ./truffle-config.js
@@ -282,7 +266,7 @@ function setup_truffle_config(solc_version, optimizer_runs, evm_version, node_ho
     console.log('node     # host: truffle vm');
   }
     
-  // wrtie created truffle-config.js file to filesystem
+  // write created truffle-config.js file to filesystem
   fs.writeFileSync(TRUFFLE_CONFIG_PATH, `module.exports = ${JSON.stringify(truffle_config, null, 4)}`);
 }
 
@@ -374,7 +358,6 @@ async function exec_truffle_test(cli_args, input_file_paths) {
   } catch (err) {
     // we do it like this to show truffe compile errors
     if (/Command failed:/.test(err)) {
-      console.log('==== TRUFFLE ERROR ====', err);
       // if there is error output, print it
       fs.existsSync(TESTRUN_ERROR_FILE) && console.log(fs.readFileSync(TESTRUN_ERROR_FILE, 'utf8'));
       cleanup_testrun_dirs();
