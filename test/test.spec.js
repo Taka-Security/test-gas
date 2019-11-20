@@ -25,6 +25,13 @@ contract('Testing', () => {
     if (test_config.fn_call) {
       fn_name = test_config.fn_call.split('(')[0];
       fn_args.push(...test_config.fn_call.replace(new RegExp(`${fn_name}\\(`), '').trim().slice(0, -1).split(',').filter(x => !!x));
+      fn_args = fn_args.map(arg => {
+        switch (arg) {
+          case 'true': return true;
+          case 'false': return false;
+          default: return arg;
+        }
+      })
     }
   });
   
@@ -37,6 +44,7 @@ contract('Testing', () => {
   
   it('Tests', async () => {
     for (let i = 0; i < contract_names.length; i += 1) {
+      console.log(fn_args)
       const contract_name = contract_names[i];
       const contract_artifact = artifacts.require(path.join(TESTRUN_CONTRACT_DIR, contract_name));
       const contract_instance = await contract_artifact.new();

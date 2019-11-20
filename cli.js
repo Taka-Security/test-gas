@@ -17,7 +17,7 @@ const { ArgumentParser } = require('argparse');
 // 
 // 
 
-const VALID_EVM_VERSIONS = ['homestead', 'tangerineWhistle', 'spuriousDragon', 'byzantium', 'constantinople', 'petersburg'];
+const VALID_EVM_VERSIONS = ['homestead', 'tangerineWhistle', 'spuriousDragon', 'byzantium', 'constantinople', 'petersburg', 'istanbul'];
 
 const TESTRUN_CONTRACT_DIR = path.join(__dirname, 'contracts', 'testrun');
 const TESTRUN_OUTPUT_DIR = path.join(__dirname, 'test', 'testrun');
